@@ -25,9 +25,10 @@ interface OrderData {
   orderTime: string
 }
 
-const orderId = `CK-${Date.now()}`
+
 
 export async function submitOrder(orderData: OrderData) {
+    const orderId = `CK-${Date.now()}`
   const SHEET_URL = process.env.GOOGLE_SHEETS_URL || "https://script.google.com/macros/s/AKfycbyNBuMU9xa2wm5Z3hELKMOmSMWyOb_hiGA-CkltcAkoyxYv_Y0GtIQPiCt87bu1rBhr/exec"
 
   // ------------------------------------------

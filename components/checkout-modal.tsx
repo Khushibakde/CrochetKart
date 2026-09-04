@@ -135,7 +135,11 @@ const total = Math.max(
         orderTime: new Date().toISOString(),
       }
 
-      await submitOrder(orderData)
+      const result = await submitOrder(orderData)
+      if (!result.success) {
+        alert(result.message || "Failed to submit your order. Please try again or contact us directly.")
+        return
+      }
       clearCart()
       setStep("success")
     } catch (error) {
