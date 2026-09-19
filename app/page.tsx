@@ -21,7 +21,7 @@ function CrochetWebsiteContent() {
 
 useEffect(() => {
     getProducts().then(setFeaturedProducts).catch(console.error)
-    setCategories(getCategories())
+    getCategories().then(setCategories).catch(console.error)
   }, [])
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -48,10 +48,35 @@ useEffect(() => {
     }
   }
 
+  const handleCategorySuggestionClick = (categoryName: string) => {
+    setSelectedCategory(categoryName)
+    setSearchInput("")
+    setSearchQuery("")
+    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" })
+    setSearchOpen(false)
+  }
+
+  const handleProductSuggestionClick = (productName: string) => {
+    setSearchInput(productName)
+    setSearchQuery(productName)
+    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" })
+    setSearchOpen(false)
+  }
+
   const clearSearch = () => {
     setSearchInput("")
     setSearchQuery("")
   }
+
+    const query = searchInput.trim().toLowerCase()
+
+  const matchedCategories = query
+    ? categories.filter((c) => c.name.toLowerCase().includes(query)).slice(0, 4)
+    : []
+
+  const matchedProducts = query
+    ? featuredProducts.filter((p) => p.name.toLowerCase().includes(query)).slice(0, 4)
+    : []
 
     const displayedProducts = featuredProducts.filter((p) => {
     const matchesCategory = selectedCategory ? p.categories?.includes(selectedCategory) : true
@@ -119,6 +144,46 @@ useEffect(() => {
                     <X className="h-3.5 w-3.5" />
                   </button>
                 )}
+
+                {(matchedCategories.length > 0 || matchedProducts.length > 0) && (
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded-xl border border-orange-100 shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto">
+                    {matchedCategories.map((category) => (
+                      <button
+                        key={`cat-${category.name}`}
+                        type="button"
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          handleCategorySuggestionClick(category.name)
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-orange-50 transition-colors"
+                      >
+                        <span className="text-lg">{category.emoji}</span>
+                        <span className="text-sm text-gray-700 truncate">{category.name}</span>
+                        <span className="text-[10px] text-orange-500 ml-auto flex-shrink-0">Category</span>
+                      </button>
+                    ))}
+
+                    {matchedProducts.map((product) => (
+                      <button
+                        key={`prod-${product.id}`}
+                        type="button"
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          handleProductSuggestionClick(product.name)
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-orange-50 transition-colors"
+                      >
+                        <img
+                          src={product.images?.[0] || "/placeholder.svg"}
+                          alt={product.name}
+                          className="w-8 h-8 rounded-md object-cover flex-shrink-0"
+                        />
+                        <span className="text-sm text-gray-700 truncate">{product.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              
               </div>
 
               <Button

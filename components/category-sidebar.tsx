@@ -12,7 +12,7 @@ export function CategorySidebar() {
   const [categories, setCategories] = useState<Category[]>([])
 
   useEffect(() => {
-    if (open) setCategories(getCategories())
+    if (open) getCategories().then(setCategories).catch(console.error)
   }, [open])
 
   return (

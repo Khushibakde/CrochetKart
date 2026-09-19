@@ -68,7 +68,7 @@ export default function AdminPage() {
  useEffect(() => {
     if (authed) {
       getProducts().then(setProducts).catch(console.error)
-      setCategoryList(getCategories())
+      getCategories().then(setCategoryList).catch(console.error)
     }
   }, [authed])
 
@@ -86,14 +86,14 @@ export default function AdminPage() {
     setAuthed(false)
   }
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     const name = newCategoryName.trim()
     if (!name) {
       alert("Enter a category name")
       return
     }
     try {
-      const updated = addCategory(name, newCategoryEmoji.trim() || "🧵")
+      const updated = await addCategory(name, newCategoryEmoji.trim() || "🧵")
       setCategoryList(updated)
       setNewCategoryName("")
       setNewCategoryEmoji("🧵")
@@ -102,7 +102,7 @@ export default function AdminPage() {
     }
   }
 
-  const handleDeleteCategory = (name: string) => {
+  const handleDeleteCategory = async (name: string) => {
     const inUse = products.some((p) => p.categories?.includes(name))
     if (inUse) {
       if (
@@ -115,7 +115,7 @@ export default function AdminPage() {
     } else if (!confirm(`Delete category "${name}"?`)) {
       return
     }
-    setCategoryList(deleteCategory(name))
+    setCategoryList(await deleteCategory(name))
   }
 
   const resetForm = () => {
